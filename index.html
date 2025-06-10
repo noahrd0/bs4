@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche d'articles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .card img {
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .card-title {
+            font-size: 1.5rem;
+        }
+        .card-text {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Recherche d'articles</h1>
+        <form id="searchForm" class="mb-4">
+            <div class="mb-3">
+                <label for="category" class="form-label">Catégorie :</label>
+                <input type="text" id="category" name="category" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">Auteur :</label>
+                <input type="text" id="author" name="author" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Date de début :</label>
+                <input type="date" id="start_date" name="start_date" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">Date de fin :</label>
+                <input type="date" id="end_date" name="end_date" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="title_contains" class="form-label">Titre contient :</label>
+                <input type="text" id="title_contains" name="title_contains" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+
+        <div id="articles" class="row"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const category = document.getElementById('category').value;
+            const author = document.getElementById('author').value;
+            const start_date = document.getElementById('start_date').value;
+            const end_date = document.getElementById('end_date').value;
+            const title_contains = document.getElementById('title_contains').value;
+
+            let url = 'http://127.0.0.1:5000/articles?';
+            if (category) url += `category=${category}&`;
+            if (author) url += `author=${author}&`;
+            if (start_date) url += `start_date=${start_date}&`;
+            if (end_date) url += `end_date=${end_date}&`;
+            if (title_contains) url += `title_contains=${title_contains}&`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                }
+                const articles = await response.json();
+
+                const articlesDiv = document.getElementById('articles');
+                articlesDiv.innerHTML = '';
+
+                if (articles.length === 0) {
+                    articlesDiv.innerHTML = '<p class="text-danger text-center">Aucun article trouvé.</p>';
+                } else {
+                    articles.forEach(article => {
+                        const articleCard = document.createElement('div');
+                        articleCard.className = 'col-md-4';
+                        articleCard.innerHTML = `
+                            <div class="card">
+                                <img src="${article.image}" class="card-img-top" alt="Image de l'article">
+                                <div class="card-body">
+                                    <h5 class="card-title">${article.title}</h5>
+                                    <p class="card-text"><strong>Auteur :</strong> ${article.author}</p>
+                                    <p class="card-text"><strong>Date :</strong> ${article.date}</p>
+                                    <p class="card-text"><strong>Catégorie :</strong> ${article.tag}</p>
+                                    <p class="card-text"><strong>Résumé :</strong> ${article.summary}</p>
+                                    <a href="${article.url}" class="btn btn-primary" target="_blank">Lire l'article</a>
+                                </div>
+                            </div>
+                        `;
+                        articlesDiv.appendChild(articleCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des articles :', error);
+                document.getElementById('articles').innerHTML = '<p class="text-danger text-center">Une erreur est survenue.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
