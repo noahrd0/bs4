@@ -68,6 +68,7 @@ def fetch_articles(base_url):
                     'date': date,
                     'url': article_url,
                     'author': extract_author(article_url) if article_url else None,
+                    'content': extract_content(article_url) if article_url else None,
                     'image_dict': extract_image_dict(article_url) if article_url else None
                 })
 
@@ -111,6 +112,34 @@ def extract_author(url):
             return None
     except requests.exceptions.RequestException as e:
         print(f"Error fetching author from {url}: {e}")
+        return None
+
+def extract_content(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        content_div = soup.find('div', class_='entry-content')
+        if content_div:
+            elements = content_div.find_all(['h2', 'p', 'a'])
+            formatted_content = ""
+            for element in elements:
+                if element.name == 'h2':
+                    formatted_content += f"\n\n{element.get_text(strip=True)}\n"
+                elif element.name == 'p':
+                    formatted_content += f"{element.get_text(strip=True)}\n"
+                elif element.name == 'a':
+                    link_text = element.get_text(strip=True)
+                    link_url = element.get('href', '')
+                    formatted_content += f"[{link_text}]({link_url})\n"
+            return formatted_content.strip()
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching content from {url}: {e}")
         return None
 
 def extract_image_dict(url):

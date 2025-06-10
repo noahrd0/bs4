@@ -13,6 +13,7 @@ Ce projet permet de scraper les articles du site [Blog du Modérateur](https://w
    - Résumé (extrait ou chapô)
    - Date de publication
    - Auteur de l'article
+   - Contenu de l’article
    - Dictionnaire des images présentes dans l'article (URL et légende)
 
 2. **Sauvegarde dans MongoDB** :
