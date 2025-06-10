@@ -44,7 +44,7 @@ Ce projet permet de scraper les articles du site [Blog du Modérateur](https://w
 
 1. Clonez le dépôt :
    ```bash
-   git clone <url_du_projet> web-scraping-mongodb
+   git clone https://github.com/noahrd0/bs4.git web-scraping-mongodb
    cd web-scraping-mongodb
    ```
 
@@ -76,7 +76,6 @@ Ce projet permet de scraper les articles du site [Blog du Modérateur](https://w
    ```
 
 ## Structure du projet
-    ```bash
     web-scraping-mongodb/
     ├── scrap.py          # Script de scraping
     ├── api.py            # API Flask
@@ -86,4 +85,3 @@ Ce projet permet de scraper les articles du site [Blog du Modérateur](https://w
     ├── docker-compose.yml # Configuration Docker Compose pour MongoDB
     ├── requirements.txt  # Dépendances Python
     ├── README.md         # Documentation du projet
-    ```
